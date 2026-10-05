@@ -11,7 +11,7 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: process.env.CLIENT_URL }));
 app.use(express.json()); // para mabasa ang JSON na ipinapadala ng client
     
 // Test route: tinitingnan kung gumagana ang server at database

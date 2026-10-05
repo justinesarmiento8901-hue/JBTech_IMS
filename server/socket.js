@@ -5,7 +5,7 @@ let io;
 
 const init = (httpServer) => {
   io = new Server(httpServer, {
-    cors: { origin: true },
+    cors: { origin: process.env.CLIENT_URL },
   });
 
   // Middleware: kailangan ng valid na token para makakonekta
