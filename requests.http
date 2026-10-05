@@ -1,0 +1,118 @@
+### Health check
+GET http://localhost:5000/api/health
+
+### Gumawa ng transaction
+POST http://localhost:5000/api/transactions
+Content-Type: application/json
+
+{ "item_id": 1, "type": "SELL", "qty": 7 }
+
+### Maglogin admin
+POST http://localhost:5000/api/auth/login
+Content-Type: application/json
+
+{ "email": "UmizoomieJBTec@ims.com", "password": "Umizoomie@25" }
+
+### Kunin lahat ng items
+GET http://localhost:5000/api/items
+
+### Kunin isang item
+GET http://localhost:5000/api/items/1
+
+### I-edit ang item
+PUT http://localhost:5000/api/items/1
+Content-Type: application/json
+
+{
+  "name": "Bolt M8 Stainless"
+}
+
+### Hanapin gamit ang SKU
+GET http://localhost:5000/api/items/sku/BLT-adfe
+
+### Burahin ang item
+DELETE http://localhost:5000/api/items/1
+
+@baseUrl = http://localhost:5000/api
+
+### 1. LOGIN bilang admin (pangalanan natin: loginAdmin)
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "UmizoomieJBTec@ims.com",
+  "password": "Umizoomie@25"
+}
+
+### 2. Sino ako? (gamit ang admin token)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 3. Gumawa ng staff user (admin lang)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+{
+  "name": "Juan Staff",
+  "email": "juan@ims.com",
+  "password": "Staff12345",
+  "role": "staff"
+}
+
+### 4. LOGIN bilang staff (pangalanan natin: loginStaff)
+# @name loginStaff
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "juan@ims.com",
+  "password": "Staff12345"
+}
+
+### 5. GET items WALANG token (dapat 401)
+GET {{baseUrl}}/items
+
+### 6. GET items may admin token (dapat 200)
+GET {{baseUrl}}/items
+Authorization: Bearer {{loginAdmin.response.body.token}}
+
+### 7. GET items may staff token (dapat 200)
+GET {{baseUrl}}/items
+Authorization: Bearer {{loginStaff.response.body.token}}
+
+### 8. Staff DELETE (dapat 403)
+DELETE {{baseUrl}}/items/2
+Authorization: Bearer {{loginStaff.response.body.token}}
+
+### 9. Staff REGISTER (dapat 403)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+Authorization: Bearer {{loginStaff.response.body.token}}
+
+{
+  "name": "Test",
+  "email": "test@ims.com",
+  "password": "Test12345"
+}
+
+### 10. Staff stock IN/OUT (dapat 201)
+POST {{baseUrl}}/transactions
+Content-Type: application/json
+Authorization: Bearer {{loginStaff.response.body.token}}
+
+{
+  "item_id": 2,
+  "type": "OUT",
+  "qty": 1
+}
+
+### 11. Maling password (dapat 401)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "UmizoomieJBTec@ims.com",
+  "password": "mali"
+}
